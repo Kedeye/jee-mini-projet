@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/user_list.js"></script>
+</head>
+<body>
+<main class="table" id="users_main_table">
+    <section class="table__header">
+        <h1>User List</h1>
+        <div>
+            <button id="logoutBtn" style="margin-right: 1rem;">Logout</button>
+            <button id="addUserBtn">Add User</button>
+        </div>
+        <div class="input-group">
+            <input type="search" placeholder="Search Data..." id="searchInput">
+            <!-- You can use your own search icon if wanted -->
+        </div>
+    </section>
+    <section class="table__body">
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Privilege</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            <!-- Users will be loaded here by JS -->
+            </tbody>
+        </table>
+    </section>
+</main>
+<!-- Add User Modal -->
+<div id="addUserFormContainer" style="display:none;" class="modal">
+    <div class="modal-content">
+        <h3>Add User</h3>
+        <form id="addUserForm">
+            <label>Username: <input type="text" name="username" required></label>
+            <label>Password: <input type="password" name="password" required></label><br>
+            <label>Privilege: 
+                <select name="privilege">
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">USER</option>
+                </select>
+            </label><br>
+            <label>Status: 
+                <select name="active">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </label><br>
+            <button type="submit">Add</button>
+            <button type="button" id="cancelAddUserBtn">Cancel</button>
+        </form>
+    </div>
+</div>
+<!-- Update User Modal -->
+<div id="updateUserFormContainer" style="display:none;" class="modal">
+    <div class="modal-content">
+        <h3>Update User</h3>
+        <form id="updateUserForm">
+            <input type="hidden" name="id" id="updateUserId">
+            <label>Username: <input type="text" name="username" id="updateUsername" required></label><br>
+            <label>Password: <input type="password" name="password" id="updatePassword"></label> <em>(Leave blank to keep current)</em><br>
+            <label>Privilege: 
+                <select name="privilege" id="updatePrivilege">
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">USER</option>
+                </select>
+            </label><br>
+            <label>Status: 
+                <select name="active" id="updateActive">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </label><br>
+            <button type="submit">Update</button>
+            <button type="button" id="cancelUpdateUserBtn">Cancel</button>
+        </form>
+    </div>
+</div>
+<div id="userListMsg"></div>
+</body>
+</html>

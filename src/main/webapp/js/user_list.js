@@ -3,20 +3,27 @@ window.onpopstate = function () {
     window.history.go(1);
 };
 
-// Check authentication on page load (before anything else)
-fetch('api/users', { method: 'GET' })
+let currentUserRole = null;
+
+// Step 1: Get current user info (role)
+fetch('api/me')
     .then(res => {
         if (res.status === 401) {
             window.location.href = 'login.html';
-            throw new Error("Not authenticated");
+            throw new Error("Non authentifié");
         }
+        return res.json();
+    })
+    .then(user => {
+        currentUserRole = user.privilege; // "ADMIN" or "USER"
+        document.dispatchEvent(new Event("userReady")); // Trigger rest of code
     })
     .catch(() => {
         window.location.href = 'login.html';
-        throw new Error("Network/auth error");
+        throw new Error("Erreur réseau/authentification");
     });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('userReady', function() {
     const tableBody = document.querySelector('#usersTable tbody');
     const addUserBtn = document.getElementById('addUserBtn');
     const addUserFormContainer = document.getElementById('addUserFormContainer');
@@ -37,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(box.hideTimeout);
         box.hideTimeout = setTimeout(() => {
             box.classList.remove("active");
-        }, 3800);
+        }, 3000);
     }
 
     function renderUsers(users) {
@@ -54,42 +61,49 @@ document.addEventListener('DOMContentLoaded', function() {
                   </span>
                 </td>
                 <td>
-                    <button class="editBtn" data-id="${user.id}">Edit</button>
-                    <button class="deleteBtn" data-id="${user.id}">Delete</button>
+                    <button class="editBtn" data-id="${user.id}">Modifier</button>
+                    <button class="deleteBtn" data-id="${user.id}">Supprimer</button>
                 </td>
             `;
             tableBody.appendChild(tr);
         });
 
-        // Attach delete handlers
+        // Attach handlers for all, but check inside the handler!
         document.querySelectorAll('.deleteBtn').forEach(btn => {
             btn.onclick = function() {
-                if(confirm("Are you sure you want to delete this user?")) {
+                if(currentUserRole !== 'ADMIN') {
+                    showMsg("Vous n’avez pas la permission", "error");
+                    return;
+                }
+                if(confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
                     fetch('api/users/' + btn.dataset.id, {
                         method: 'DELETE'
                     })
                     .then(res => {
-                        if (!res.ok) throw new Error('Delete failed');
-                        showMsg("User deleted successfully!", "success");
+                        if (!res.ok) throw new Error('Échec de la suppression');
+                        showMsg("Utilisateur supprimé avec succès !", "success");
                         loadUsers();
                     })
                     .catch(err => {
-                        showMsg("Delete error: " + err.message, "error");
+                        showMsg("Erreur lors de la suppression: " + err.message, "error");
                         console.error(err);
                     });
                 }
             };
         });
 
-        // Attach edit handlers
         document.querySelectorAll('.editBtn').forEach(btn => {
             btn.onclick = function() {
+                if(currentUserRole !== 'ADMIN') {
+                    showMsg("Vous n’avez pas la permission", "error");
+                    return;
+                }
                 const userId = btn.dataset.id;
                 const user = lastUsers.find(u => u.id == userId);
                 if (user) {
                     document.getElementById('updateUserId').value = user.id;
                     document.getElementById('updateUsername').value = user.username;
-                    document.getElementById('updatePassword').value = ""; // blank to keep current password
+                    document.getElementById('updatePassword').value = "";
                     document.getElementById('updatePrivilege').value = user.privilege;
                     document.getElementById('updateActive').value = user.active ? "true" : "false";
                     updateUserFormContainer.style.display = 'flex';
@@ -101,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadUsers() {
         fetch('api/users')
             .then(response => {
-                if (!response.ok) throw new Error("Not authorized or error fetching users.");
+                if (!response.ok) throw new Error("Non autorisé ou erreur lors du chargement des utilisateurs.");
                 return response.json();
             })
             .then(users => {
@@ -109,15 +123,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderUsers(users);
             })
             .catch(err => {
-                showMsg("Cannot load users: " + err.message, "error");
+                showMsg("Impossible de charger les utilisateurs: " + err.message, "error");
                 console.error(err);
             });
     }
 
     if (tableBody) loadUsers();
 
+    // Only ADMIN can open the Add User form
     if (addUserBtn) {
         addUserBtn.onclick = function() {
+            if(currentUserRole !== 'ADMIN') {
+                showMsg("Vous n’avez pas la permission", "error");
+                return;
+            }
             addUserForm.reset();
             addUserFormContainer.style.display = 'flex';
         };
@@ -128,9 +147,14 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // Add user (will be blocked by backend if not ADMIN, but frontend checks first)
     if (addUserForm) {
         addUserForm.onsubmit = function(e) {
             e.preventDefault();
+            if(currentUserRole !== 'ADMIN') {
+                showMsg("Vous n’avez pas la permission", "error");
+                return;
+            }
             const formData = new FormData(addUserForm);
             const data = {
                 username: formData.get('username'),
@@ -147,11 +171,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!res.ok) throw new Error('Add failed');
                 addUserFormContainer.style.display = 'none';
                 addUserForm.reset();
-                showMsg("User added successfully!", "success");
+                showMsg("Utilisateur ajouté avec succès !", "success");
                 loadUsers();
             })
             .catch(err => {
-                showMsg("Add error: " + err.message, "error");
+                showMsg("Ajouter error: " + err.message, "error");
                 console.error(err);
             });
         };
@@ -166,6 +190,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (updateUserForm) {
         updateUserForm.onsubmit = function(e) {
             e.preventDefault();
+            if(currentUserRole !== 'ADMIN') {
+                showMsg("Vous n’avez pas la permission", "error");
+                return;
+            }
             const userId = document.getElementById('updateUserId').value;
             const username = document.getElementById('updateUsername').value;
             const password = document.getElementById('updatePassword').value;
@@ -181,31 +209,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(data)
             })
             .then(res => {
-                if (!res.ok) throw new Error('Update failed');
+                if (!res.ok) throw new Error('Erreur lors de la mise à jour');
                 updateUserFormContainer.style.display = 'none';
-                showMsg("User updated successfully!", "success");
+                showMsg("Utilisateur modifié avec succès !", "success");
                 loadUsers();
             })
             .catch(err => {
-                showMsg("Update error: " + err.message, "error");
+                showMsg("Erreur lors de la mise à jour: " + err.message, "error");
                 console.error(err);
             });
         };
     }
 
-    // Logout handler (only once!)
-	if (logoutBtn) {
-	    logoutBtn.onclick = function() {
-	        if (confirm("Are you sure you want to log out?")) {
-	            fetch('api/logout', { method: 'POST' })
-	                .then(() => {
-	                    showMsg("Logged out successfully!", "success");
-	                    setTimeout(() => window.location.replace('login.html'), 1000);
-	                })
-	                .catch(() => window.location.replace('login.html'));
-	        }
-	    };
-	}
+    if (logoutBtn) {
+        logoutBtn.onclick = function() {
+            if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                fetch('api/logout', { method: 'POST' })
+                    .then(() => {
+                        showMsg("Déconnexion réussie !", "success");
+                        setTimeout(() => window.location.replace('login.html'), 1000);
+                    })
+                    .catch(() => window.location.replace('login.html'));
+            }
+        };
+    }
 
     // Search filter
     if (searchInput) {

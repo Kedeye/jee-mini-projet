@@ -47,11 +47,9 @@ input[type="button"]:hover {
 /* Logout button */
 button#logoutBtn {
     background: #ff3e3e;
-    padding: 0.8rem 1.5rem;
 }
 button#logoutBtn:hover {
     background: #bb2222;
-    padding: 0.8rem 1.5rem;
 }
 
 /* Cancel buttons (general class or id for modal cancel) */

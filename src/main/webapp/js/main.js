@@ -33,12 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     // On success, redirect—show NO message
                     window.location.replace('user_list.html');
                 } else {
-                    msg.innerText = "Login failed. Check your credentials.";
+                    msg.innerText = "Échec de la connexion. Vérifiez vos identifiants.";
                 }
             } catch (err) {
                 spinner.style.display = "none";
                 btn.disabled = false;
-                msg.innerText = "Network error. Try again.";
+                msg.innerText = "Erreur réseau. Réessayez.";
             }
         });
     }

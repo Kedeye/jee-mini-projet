@@ -1,6 +1,7 @@
-com\yourcompany\miniprojet\dao\UserDao.class
-com\yourcompany\miniprojet\servlet\LogoutServlet.class
-com\yourcompany\miniprojet\servlet\UserServlet.class
-com\yourcompany\miniprojet\entity\User.class
-com\yourcompany\miniprojet\filter\AuthenticationFilter.class
-com\yourcompany\miniprojet\servlet\LoginServlet.class
+com\M1\miniprojet\entity\User.class
+com\M1\miniprojet\servlet\LogoutServlet.class
+com\M1\miniprojet\filter\AuthenticationFilter.class
+com\M1\miniprojet\servlet\UserServlet.class
+com\M1\miniprojet\servlet\LoginServlet.class
+com\M1\miniprojet\servlet\MeServlet.class
+com\M1\miniprojet\dao\UserDao.class

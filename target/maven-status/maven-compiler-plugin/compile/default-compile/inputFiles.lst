@@ -1,6 +1,7 @@
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\dao\UserDao.java
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\entity\User.java
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\filter\AuthenticationFilter.java
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\servlet\LoginServlet.java
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\servlet\LogoutServlet.java
-C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\yourcompany\miniprojet\servlet\UserServlet.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\dao\UserDao.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\entity\User.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\filter\AuthenticationFilter.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\servlet\LoginServlet.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\servlet\LogoutServlet.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\servlet\MeServlet.java
+C:\Users\kedeye\eclipse-workspace\miniprojet-jee\src\main\java\com\M1\miniprojet\servlet\UserServlet.java
